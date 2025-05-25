@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>Confirm Delete</h2>
+  <p>Are you sure you want to delete {{ lead.name }}?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Delete</button>
+  </form>
+  <a href="{% url 'lead_list' %}">Cancel</a>
+{% endblock %}

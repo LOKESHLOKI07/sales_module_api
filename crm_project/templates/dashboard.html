@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Dashboard</h2>
+
+  <h3>Notifications</h3>
+  <ul>
+    {% for notification in unread_notifications %}
+      <li>{{ notification.message }} <small>({{ notification.created_at }})</small></li>
+    {% empty %}
+      <li>No new notifications.</li>
+    {% endfor %}
+  </ul>
+
+  <h3>Lead Statistics</h3>
+  <ul>
+    {% for stat in lead_stats %}
+      <li>{{ stat.status|capfirst }}: {{ stat.total }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

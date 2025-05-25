@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Header and Create Button -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Leads Management</h2>
+    <a href="{% url 'lead_create' %}" class="btn btn-primary">
+      <i class="bi bi-plus-lg"></i> Create Lead
+    </a>
+  </div>
+
+  <!-- Filter Form -->
+<div class="card mb-4">
+  <div class="card-header">
+    <h5 class="card-title mb-0">Filter Leads</h5>
+  </div>
+  <div class="card-body">
+    <form method="get" class="d-flex flex-wrap align-items-end gap-3">
+      {% for field in filter.form %}
+      <div class="d-flex flex-column">
+        <label for="{{ field.id_for_label }}" class="form-label mb-1">{{ field.label }}</label>
+        {{ field }}
+      </div>
+      {% endfor %}
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-search"></i> Search / Filter
+        </button>
+        <button type="submit" name="export" value="1" class="btn btn-outline-secondary">
+          <i class="bi bi-download"></i> Export CSV
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+  <!-- Leads Table -->
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="card-title mb-0">Leads List</h5>
+      <span class="badge bg-primary">{{ filter.qs.count }} lead{{ filter.qs.count|pluralize }}</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-hover table-striped mb-0">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Lead Owner</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Status</th>
+            <th scope="col">Assigned To</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for lead in filter.qs %}
+          <tr>
+            <td>{{ lead.created_by.username }}</td>
+            <td>{{ lead.first_name }} {{ lead.last_name }}</td>
+            <td><a href="mailto:{{ lead.email }}">{{ lead.email }}</a></td>
+            <td>
+              <span class="badge
+                {% if lead.status == 'new' %}bg-info
+                {% elif lead.status == 'contacted' %}bg-primary
+                {% elif lead.status == 'qualified' %}bg-success
+                {% elif lead.status == 'lost' %}bg-danger
+                {% elif lead.status == 'won' %}bg-dark
+                {% else %}bg-secondary{% endif %}">
+                {{ lead.get_status_display }}
+              </span>
+            </td>
+            <td>
+              {% if lead.assigned_to %}
+                <span class="badge bg-light text-dark">{{ lead.assigned_to.username }}</span>
+              {% else %}
+                <span class="badge bg-warning text-dark">Unassigned</span>
+              {% endif %}
+            </td>
+            <td class="text-end">
+              <div class="btn-group" role="group">
+                <a href="{% url 'lead_update' lead.pk %}" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-pencil"></i> Edit
+                </a>
+                <a href="{% url 'lead_delete' lead.pk %}" class="btn btn-sm btn-outline-danger">
+                  <i class="bi bi-trash"></i> Delete
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6" class="text-center py-4">No leads found. Create your first lead to get started.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
